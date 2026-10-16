@@ -3,14 +3,25 @@ extends CharacterBody2D
 
 const SPEED = 300.0
 
+@onready var spawner = get_tree().get_root().get_node("Game/ProjectileSpawner")
+@onready var projectile = load("res://scenes/projectile.tscn")
 
 var current_weapon = 0
-var weapons = ["fireball"]
+var weapons = [WeaponClass.new(
+	"fireball",
+	5,
+	5,
+	5
+)]
 var target = position
 
 
 func _physics_process(delta: float) -> void:
-	velocity = position.direction_to(target) * (-1*SPEED)
+	if velocity > Vector2(0,0):
+		if self.is_on_wall():
+			velocity = velocity.move_toward(Vector2(0,0),2.0)
+		velocity = velocity.move_toward(Vector2(0,0),1.0)
+	
 	if position.distance_to(target) > 10:
 		move_and_slide()
 	
@@ -20,8 +31,9 @@ func _input(event: InputEvent) -> void:
 		if event.button_index == MOUSE_BUTTON_LEFT :
 			# move away from cursor
 			target = get_global_mouse_position()
+			velocity = position.direction_to(target) * (-1*SPEED)
 			# fire current weapon
-			weapons[current_weapon].shoot(target)
+			shoot(target)
 		if event.button_index == MOUSE_BUTTON_RIGHT :
 			# interact
 			pass
@@ -34,20 +46,12 @@ func _input(event: InputEvent) -> void:
 			# switch weapon ++
 			pass
 	
+func shoot(target: Vector2) -> void:
+	var instance = projectile.instantiate()
+	instance.weapon_name = weapons[current_weapon].weapon_name
+	instance.weapon_damage = weapons[current_weapon].weapon_damage
+	instance.weapon_speed = weapons[current_weapon].weapon_speed
+	instance.target = target
+	instance.s_pos = position
+	spawner.add_child.call_deferred(instance)
 	
-	#if not is_on_floor():
-		#velocity += get_gravity() * delta
-#
-	## Handle jump.
-	#if Input.is_action_just_pressed("ui_accept") and is_on_floor():
-		#velocity.y = JUMP_VELOCITY
-#
-	## Get the input direction and handle the movement/deceleration.
-	## As good practice, you should replace UI actions with custom gameplay actions.
-	#var direction := Input.get_axis("left", "ui_right")
-	#if direction:
-		#velocity.x = direction * SPEED
-	#else:
-		#velocity.x = move_toward(velocity.x, 0, SPEED)
-
-	#move_and_slide()

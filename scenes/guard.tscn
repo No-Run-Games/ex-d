@@ -1,0 +1,38 @@
+[gd_scene format=3 uid="uid://d3trp8uqdj4ht"]
+
+[ext_resource type="Script" uid="uid://kj53t0a1e8ft" path="res://scripts/guard.gd" id="1_ci2qi"]
+[ext_resource type="Texture2D" uid="uid://dffxb30vldhgk" path="res://assets/guard.png" id="1_m4fl1"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ci2qi"]
+atlas = ExtResource("1_m4fl1")
+region = Rect2(0, 0, 32, 32)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_vvcby"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_ci2qi")
+}],
+"loop": 1,
+"name": &"default",
+"speed": 5.0
+}]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_k0dx2"]
+size = Vector2(14, 32)
+
+[node name="Guard" type="CharacterBody2D" unique_id=2092102194]
+collision_layer = 3
+collision_mask = 3
+script = ExtResource("1_ci2qi")
+metadata/enemy = true
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=446523880]
+sprite_frames = SubResource("SpriteFrames_vvcby")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1330233007]
+shape = SubResource("RectangleShape2D_k0dx2")
+
+[node name="ShootCooldown" type="Timer" parent="." unique_id=613608327]
+wait_time = 2.0
+autostart = true
